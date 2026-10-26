@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Delete Medicine - Medicine Finder</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #dc2626;
+            margin-bottom: 10px;
+        }
+
+        .description {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        label {
+            display: block;
+            margin-top: 18px;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .delete-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 25px;
+            border: none;
+            border-radius: 6px;
+            background: #dc2626;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background: #b91c1c;
+        }
+
+        .back-btn {
+            display: block;
+            margin-top: 12px;
+            padding: 12px;
+            text-align: center;
+            text-decoration: none;
+            background: #e2e8f0;
+            color: #1e293b;
+            border-radius: 6px;
+        }
+
+        .back-btn:hover {
+            background: #cbd5e1;
+        }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            background: #fef2f2;
+            color: #991b1b;
+            overflow-wrap: anywhere;
+        }
+
+        .warning {
+            padding: 12px;
+            margin-top: 20px;
+            border-radius: 6px;
+            background: #fff7ed;
+            color: #9a3412;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>Delete Medicine</h2>
+
+        <p class="description">
+            Enter the medicine name and the pharmacy name
+            to delete the matching medicine record.
+        </p>
+
+        <!-- Display Flask flash messages -->
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="message">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Delete Medicine Form -->
+        <form method="POST"
+              action="{{ url_for('delete_medicine') }}"
+              onsubmit="return confirmDelete();">
+
+            <label for="medicine_name">Medicine Name</label>
+
+            <input
+                type="text"
+                id="medicine_name"
+                name="medicine_name"
+                placeholder="Enter medicine name"
+                required
+            >
+
+            <label for="pharmacy_name">Pharmacy Name</label>
+
+            <input
+                type="text"
+                id="pharmacy_name"
+                name="pharmacy_name"
+                placeholder="Enter pharmacy name"
+                required
+            >
+
+            <div class="warning">
+                Warning: This action permanently deletes the matching
+                medicine record from the database.
+            </div>
+
+            <button type="submit" class="delete-btn">
+                Delete Medicine
+            </button>
+
+        </form>
+
+        <a href="{{ url_for('dashboard') }}" class="back-btn">
+            Back to Dashboard
+        </a>
+
+    </div>
+
+    <script>
+        function confirmDelete() {
+            const medicine = document
+                .getElementById("medicine_name").value.trim();
+
+            const pharmacy = document
+                .getElementById("pharmacy_name").value.trim();
+
+            if (!medicine || !pharmacy) {
+                alert("Please enter both medicine and pharmacy names.");
+                return false;
+            }
+
+            return confirm(
+                "Are you sure you want to delete '" +
+                medicine + "' from '" + pharmacy + "'?"
+            );
+        }
+    </script>
+
+</body>
+</html>

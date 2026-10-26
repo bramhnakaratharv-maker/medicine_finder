@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Expiry Alert - MedFind</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f6fa;
+            margin: 0;
+            padding: 25px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #00000015;
+        }
+
+        h1 {
+            color: #243b53;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: white;
+            background: #2878d0;
+            padding: 10px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #2878d0;
+            color: white;
+        }
+
+        .expired {
+            color: #b42318;
+            font-weight: bold;
+        }
+
+        .soon {
+            color: #b54708;
+            font-weight: bold;
+        }
+
+        .safe {
+            color: #067647;
+            font-weight: bold;
+        }
+
+        .empty {
+            padding: 20px;
+            background: #ecfdf3;
+            color: #067647;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Medicine Expiry Alert</h1>
+    <p>Medicines that have expired or will expire within 30 days.</p>
+
+    <a class="back" href="{{ url_for('home') }}">Back to Home</a>
+
+    {% if medicines %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Medicine</th>
+                <th>Pharmacy</th>
+                <th>Expiry Date</th>
+                <th>Stock</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for medicine in medicines %}
+            <tr>
+                <td>{{ medicine[0] }}</td>
+                <td>{{ medicine[1] }}</td>
+                <td>{{ medicine[2] }}</td>
+                <td>{{ medicine[6] }}</td>
+                <td>{{ medicine[5] }}</td>
+                <td>
+                    {% if medicine[6] and medicine[6] < now_date %}
+                        <span class="expired">Expired</span>
+                    {% elif medicine[6] and medicine[6] <= now_date %}
+                        <span class="expired">Expires today</span>
+                    {% else %}
+                        <span class="soon">Expiring soon</span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+        <div class="empty">
+            No expired medicines or medicines expiring within the next 30 days were found.
+        </div>
+    {% endif %}
+
+</div>
+</body>
+</html>

@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pharmacy Report</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            margin: 0;
+            padding: 25px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #23395d;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 25px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px #ddd;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #23395d;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f2f6fc;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 16px;
+            background: #23395d;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Pharmacy Report</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Sr. No.</th>
+                    <th>Pharmacy Name</th>
+                    <th>Medicine Count</th>
+                    <th>Total Stock</th>
+                    <th>Average Price (₹)</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for pharmacy in rows %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ pharmacy.pharmacy_name or 'N/A' }}</td>
+                    <td>{{ pharmacy.medicine_count }}</td>
+                    <td>{{ pharmacy.total_stock }}</td>
+                    <td>{{ "%.2f"|format(pharmacy.average_price|float) }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" class="empty">
+                        No pharmacy records found. Please add medicines first.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ url_for('dashboard') }}" class="back">
+            Back to Dashboard
+        </a>
+    </div>
+</body>
+</html>

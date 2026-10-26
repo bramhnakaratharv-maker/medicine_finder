@@ -1,0 +1,407 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Availability Finder</title>
+
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    >
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #f3f6f9;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        header {
+            background: #198754;
+            color: white;
+            padding: 22px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+        }
+
+        .search-box,
+        .medicine-card,
+        .map-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .search-form input {
+            flex: 1;
+            min-width: 0;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            padding: 12px 22px;
+            background: #198754;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #146c43;
+        }
+
+        h2 {
+            color: #176b45;
+        }
+
+        .medicine-card h3 {
+            color: #198754;
+            margin-top: 0;
+        }
+
+        .medicine-card p {
+            line-height: 1.5;
+            overflow-wrap: anywhere;
+        }
+
+        .directions {
+            display: inline-block;
+            padding: 10px 15px;
+            color: white;
+            background: #0d6efd;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .directions:hover {
+            background: #0b5ed7;
+        }
+
+        .message {
+            padding: 18px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        #pharmacy-map {
+            width: 100%;
+            height: 450px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        .note {
+            color: #555;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin: 5px 0 20px;
+            color: #198754;
+            text-decoration: none;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .search-form input,
+            .search-form button {
+                width: 100%;
+            }
+
+            #pharmacy-map {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <header>
+        <h1>Medicine Availability Finder</h1>
+        <p>Find medicines and pharmacy locations</p>
+    </header>
+
+    <div class="search-box">
+        <h2>Search Medicine</h2>
+
+        <form
+            class="search-form"
+            action="{{ url_for('search') }}"
+            method="POST"
+        >
+            <input
+                type="text"
+                name="medicine_name"
+                placeholder="Enter medicine name..."
+                value="{{ search_term or query or '' }}"
+                required
+            >
+
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <h2>Medicine Search Results</h2>
+
+    {% if medicines %}
+
+        {% for medicine in medicines %}
+
+        <div class="medicine-card">
+            <h3>{{ medicine.medicine_name }}</h3>
+
+            <p>
+                <strong>Pharmacy:</strong>
+                {{ medicine.pharmacy_name or 'Not available' }}
+            </p>
+
+            <p>
+                <strong>Address:</strong>
+                {{ medicine.address or 'Not available' }}
+            </p>
+
+            <p>
+                <strong>Price:</strong>
+                {% if medicine.price is not none %}
+                    ₹{{ medicine.price }}
+                {% else %}
+                    Not available
+                {% endif %}
+            </p>
+
+            <p>
+                <strong>Stock:</strong>
+                {% if medicine.stock is not none %}
+                    {{ medicine.stock }}
+                {% else %}
+                    Not available
+                {% endif %}
+            </p>
+
+            <p>
+                <strong>Phone:</strong>
+                {{ medicine.phone or 'Not available' }}
+            </p>
+
+            <p>
+                <strong>Expiry Date:</strong>
+                {{ medicine.expiry_date or 'Not available' }}
+            </p>
+
+            {% if medicine.latitude is not none and medicine.longitude is not none %}
+                <a
+                    class="directions"
+                    href="https://www.google.com/maps/dir/?api=1&destination={{ medicine.latitude }},{{ medicine.longitude }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Get Directions
+                </a>
+            {% else %}
+                <p class="note">
+                    Pharmacy coordinates are not available.
+                </p>
+            {% endif %}
+        </div>
+
+        {% endfor %}
+
+    {% elif search_term or query %}
+
+        <p class="message">
+            No medicine found. Please try another medicine name.
+        </p>
+
+    {% else %}
+
+        <p class="message">
+            Enter a medicine name above to check availability.
+        </p>
+
+    {% endif %}
+
+    <section class="map-section">
+        <h2>Pharmacy Location Map</h2>
+
+        <p class="note">
+            Click on a marker to view pharmacy details.
+            Only matching search results with coordinates are shown.
+        </p>
+
+        <div id="pharmacy-map"></div>
+
+        <p class="note">
+            Marker accuracy depends on the coordinates saved in your database.
+        </p>
+    </section>
+
+    <a class="back-link" href="{{ url_for('dashboard') }}">
+        &larr; Back to Dashboard
+    </a>
+
+    <!-- Flask converts the medicine records to JSON here -->
+    <script id="pharmacy-data" type="application/json">
+        {{ medicines | tojson }}
+    </script>
+
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+    // Initialize the map
+    const map = L.map("pharmacy-map").setView(
+        [18.6298, 73.7997],
+        13
+    );
+
+    // OpenStreetMap tiles
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
+
+    // Read JSON data supplied by Flask
+    const dataElement = document.getElementById("pharmacy-data");
+    let medicines = [];
+
+    try {
+        medicines = JSON.parse(dataElement.textContent);
+    } catch (error) {
+        console.error("Unable to read pharmacy data:", error);
+    }
+
+    const bounds = [];
+
+    medicines.forEach(function(medicine) {
+        const latitude = Number(medicine.latitude);
+        const longitude = Number(medicine.longitude);
+
+        if (
+            medicine.latitude === null ||
+            medicine.longitude === null ||
+            medicine.latitude === undefined ||
+            medicine.longitude === undefined ||
+            !Number.isFinite(latitude) ||
+            !Number.isFinite(longitude) ||
+            latitude < -90 ||
+            latitude > 90 ||
+            longitude < -180 ||
+            longitude > 180
+        ) {
+            return;
+        }
+
+        const marker = L.marker([
+            latitude,
+            longitude
+        ]).addTo(map);
+
+        // Create popup safely
+        const popup = document.createElement("div");
+
+        const heading = document.createElement("h3");
+        heading.textContent = medicine.pharmacy_name || "Pharmacy";
+        popup.appendChild(heading);
+
+        function addDetail(label, value) {
+            const paragraph = document.createElement("p");
+            const strong = document.createElement("strong");
+
+            strong.textContent = label + ": ";
+            paragraph.appendChild(strong);
+
+            paragraph.appendChild(
+                document.createTextNode(
+                    value === null ||
+                    value === undefined ||
+                    value === ""
+                        ? "Not available"
+                        : String(value)
+                )
+            );
+
+            popup.appendChild(paragraph);
+        }
+
+        addDetail("Medicine", medicine.medicine_name);
+        addDetail("Address", medicine.address);
+
+        addDetail(
+            "Price",
+            medicine.price === null ||
+            medicine.price === undefined
+                ? "Not available"
+                : "₹" + medicine.price
+        );
+
+        addDetail("Stock", medicine.stock);
+        addDetail("Phone", medicine.phone);
+
+        const directions = document.createElement("a");
+        directions.textContent = "Get Directions";
+        directions.href =
+            "https://www.google.com/maps/dir/?api=1&destination=" +
+            encodeURIComponent(latitude + "," + longitude);
+
+        directions.target = "_blank";
+        directions.rel = "noopener noreferrer";
+
+        popup.appendChild(directions);
+        marker.bindPopup(popup);
+
+        bounds.push([latitude, longitude]);
+    });
+
+    // Fit the map around available markers
+    if (bounds.length > 0) {
+        map.fitBounds(bounds, {
+            padding: [30, 30],
+            maxZoom: 15
+        });
+    }
+</script>
+
+</body>
+</html>

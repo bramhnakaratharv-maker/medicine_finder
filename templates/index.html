@@ -1,0 +1,541 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedFind | Medicine Availability Finder</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --green: #13866a;
+            --dark-green: #075c49;
+            --light-green: #e8f7f0;
+            --text: #17352e;
+            --muted: #657871;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f7fbf9;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .navbar {
+            background: white;
+            border-bottom: 1px solid #e3eee8;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .nav-inner {
+            max-width: 1180px;
+            margin: auto;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 25px;
+            font-weight: bold;
+            color: var(--dark-green);
+        }
+
+        .brand-icon {
+            background: var(--green);
+            color: white;
+            border-radius: 12px;
+            width: 43px;
+            height: 43px;
+            display: grid;
+            place-items: center;
+            font-size: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .nav-links a:hover {
+            color: var(--green);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 11px 19px;
+            border-radius: 9px;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--green);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--dark-green);
+        }
+
+        .btn-outline {
+            border-color: #c7ded4;
+            color: var(--dark-green);
+            background: white;
+        }
+
+        .btn-outline:hover {
+            background: var(--light-green);
+        }
+
+        .hero {
+            background: linear-gradient(125deg, #e8f7f0, #f8fcfa 65%, #d8f0e4);
+            padding: 75px 24px 70px;
+        }
+
+        .hero-inner {
+            max-width: 1180px;
+            margin: auto;
+            display: grid;
+            grid-template-columns: 1.3fr 0.7fr;
+            align-items: center;
+            gap: 45px;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            color: var(--dark-green);
+            background: #d3eee1;
+            border-radius: 30px;
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: clamp(36px, 5vw, 57px);
+            line-height: 1.13;
+            letter-spacing: -1.5px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 span {
+            color: var(--green);
+        }
+
+        .hero p {
+            color: var(--muted);
+            font-size: 17px;
+            max-width: 600px;
+            margin-bottom: 28px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .hero-card {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 18px 50px #174d3814;
+            border: 1px solid #e3f0e9;
+        }
+
+        .medical-icon {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 18px;
+            display: grid;
+            place-items: center;
+            border-radius: 25px;
+            background: var(--light-green);
+            color: var(--green);
+            font-size: 52px;
+        }
+
+        .hero-card h2 {
+            text-align: center;
+            font-size: 23px;
+            margin-bottom: 8px;
+        }
+
+        .hero-card > p {
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 22px;
+        }
+
+        .mini-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 13px 0;
+            border-top: 1px solid #edf2ef;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .mini-check {
+            width: 32px;
+            height: 32px;
+            display: grid;
+            place-items: center;
+            background: var(--light-green);
+            color: var(--green);
+            border-radius: 9px;
+        }
+
+        .section {
+            max-width: 1180px;
+            margin: auto;
+            padding: 65px 24px;
+        }
+
+        .section-heading {
+            text-align: center;
+            max-width: 650px;
+            margin: 0 auto 35px;
+        }
+
+        .section-heading h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 22px;
+        }
+
+        .feature {
+            background: white;
+            border: 1px solid #e5eee9;
+            border-radius: 17px;
+            padding: 27px;
+            transition: 0.2s;
+        }
+
+        .feature:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px #174d3810;
+        }
+
+        .feature-icon {
+            width: 52px;
+            height: 52px;
+            display: grid;
+            place-items: center;
+            border-radius: 14px;
+            background: var(--light-green);
+            font-size: 25px;
+            margin-bottom: 18px;
+        }
+
+        .feature h3 {
+            font-size: 19px;
+            margin-bottom: 8px;
+        }
+
+        .feature p {
+            font-size: 14px;
+            color: var(--muted);
+            margin-bottom: 18px;
+        }
+
+        .feature a {
+            color: var(--green);
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .cta {
+            max-width: 1132px;
+            margin: 0 auto 65px;
+            padding: 38px;
+            border-radius: 22px;
+            background: var(--dark-green);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 22px;
+            flex-wrap: wrap;
+        }
+
+        .cta h2 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .cta p {
+            color: #d4e8df;
+        }
+
+        .cta .btn {
+            background: white;
+            color: var(--dark-green);
+        }
+
+        .messages {
+            max-width: 1180px;
+            margin: 18px auto 0;
+            padding: 0 24px;
+        }
+
+        .message {
+            background: #e8f7f0;
+            color: var(--dark-green);
+            border: 1px solid #c9e8d8;
+            border-radius: 9px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+        }
+
+        .footer {
+            background: white;
+            border-top: 1px solid #e5eee9;
+            padding: 25px 24px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .footer-inner {
+            max-width: 1180px;
+            margin: auto;
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 800px) {
+            .hero-inner {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding-top: 48px;
+            }
+
+            .hero-card {
+                max-width: 480px;
+                width: 100%;
+                margin: auto;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-inner {
+                padding: 14px 18px;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+
+            .cta {
+                margin: 0 18px 40px;
+                padding: 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="nav-inner">
+        <a class="brand" href="{{ url_for('home') }}">
+            <span class="brand-icon">+</span>
+            <span>MedFind</span>
+        </a>
+
+        <nav class="nav-links">
+            <a href="{{ url_for('home') }}">Home</a>
+
+            {% if session.get('user_id') %}
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                <a href="{{ url_for('search') }}">Find Medicine</a>
+                <a href="{{ url_for('compare_prices') }}">Compare</a>
+                <a href="{{ url_for('view_medicines') }}">Medicines</a>
+                <a class="btn btn-outline" href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}">Login</a>
+                <a class="btn btn-primary" href="{{ url_for('register') }}">Get Started</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+
+{% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+<main>
+    <section class="hero">
+        <div class="hero-inner">
+            <div>
+                <span class="eyebrow">YOUR MEDICINE AVAILABILITY PARTNER</span>
+                <h1>Find the right medicine, <span>with ease.</span></h1>
+
+                <p>
+                    Search for medicines, check pharmacy availability,
+                    compare prices and find pharmacy contact details
+                    in one convenient place.
+                </p>
+
+                <div class="hero-actions">
+                    <a class="btn btn-primary" href="{{ url_for('search') }}">
+                        Find Medicine &rarr;
+                    </a>
+
+                    <a class="btn btn-outline" href="{{ url_for('view_medicines') }}">
+                        Browse Medicines
+                    </a>
+                </div>
+            </div>
+
+            <div class="hero-card">
+                <div class="medical-icon">✚</div>
+                <h2>Medicine Search Made Simple</h2>
+                <p>A convenient way to explore medicine stock information.</p>
+
+                <div class="mini-item">
+                    <span class="mini-check">✓</span>
+                    <span>Check listed medicine availability</span>
+                </div>
+
+                <div class="mini-item">
+                    <span class="mini-check">₹</span>
+                    <span>View listed medicine prices</span>
+                </div>
+
+                <div class="mini-item">
+                    <span class="mini-check">⌖</span>
+                    <span>Find pharmacy contact details</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="section-heading">
+            <h2>Everything you need, in one place</h2>
+            <p>
+                Use MedFind to explore medicine records and make it easier
+                to find the information you need.
+            </p>
+        </div>
+
+        <div class="feature-grid">
+            <article class="feature">
+                <div class="feature-icon">🔎</div>
+                <h3>Find Medicines</h3>
+                <p>
+                    Search the available medicine records and view
+                    the listed pharmacy information.
+                </p>
+                <a href="{{ url_for('search') }}">Search medicines &rarr;</a>
+            </article>
+
+            <article class="feature">
+                <div class="feature-icon">₹</div>
+                <h3>Compare Prices</h3>
+                <p>
+                    Compare listed prices to help you review
+                    the options available in the system.
+                </p>
+                <a href="{{ url_for('compare_prices') }}">Compare medicines &rarr;</a>
+            </article>
+
+            <article class="feature">
+                <div class="feature-icon">🏥</div>
+                <h3>Pharmacy Details</h3>
+                <p>
+                    View recorded pharmacy addresses, phone numbers
+                    and medicine stock information.
+                </p>
+                <a href="{{ url_for('view_medicines') }}">Browse records &rarr;</a>
+            </article>
+        </div>
+    </section>
+
+    {% if session.get('user_id') %}
+        <section class="cta">
+            <div>
+                <h2>Welcome back, {{ session.get('username', 'User') }}!</h2>
+                <p>Continue to your MedFind dashboard and medicine tools.</p>
+            </div>
+
+            <a class="btn" href="{{ url_for('dashboard') }}">
+                Open Dashboard &rarr;
+            </a>
+        </section>
+    {% else %}
+        <section class="cta">
+            <div>
+                <h2>Get started with MedFind</h2>
+                <p>Create an account to access the available website features.</p>
+            </div>
+
+            <a class="btn" href="{{ url_for('register') }}">
+                Create Account &rarr;
+            </a>
+        </section>
+    {% endif %}
+</main>
+
+<footer class="footer">
+    <div class="footer-inner">
+        <span><strong>MedFind</strong> — Medicine Availability Finder</span>
+        <span>College Project · Medicine information and stock records</span>
+    </div>
+</footer>
+
+</body>
+</html>

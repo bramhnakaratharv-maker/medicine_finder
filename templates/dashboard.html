@@ -1,0 +1,446 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MedFind Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f6fc;
+            margin: 0;
+            padding: 25px 15px;
+            color: #263238;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #176b55, #219b76);
+            color: white;
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 5px 18px #00000012;
+        }
+
+        .header h1 {
+            margin-top: 0;
+            font-size: 30px;
+        }
+
+        .header p {
+            line-height: 1.6;
+        }
+
+        .role {
+            font-weight: bold;
+        }
+
+        h2 {
+            color: #176b55;
+            margin-top: 30px;
+        }
+
+        .cards, .links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 16px;
+            margin-top: 18px;
+        }
+
+        .card, .link-card {
+            background: white;
+            padding: 22px;
+            border-radius: 13px;
+            box-shadow: 0 4px 14px #0000000c;
+            border: 1px solid #e8eeef;
+        }
+
+        .card h2 {
+            font-size: 30px;
+            margin-bottom: 5px;
+        }
+
+        .link-card h3 {
+            color: #176b55;
+            margin-top: 0;
+        }
+
+        .link-card p {
+            color: #58666b;
+            line-height: 1.5;
+        }
+
+        .link-card a {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 10px 14px;
+            border-radius: 7px;
+            background: #e7f5ef;
+            color: #176b55;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .link-card a:hover {
+            background: #d1eee1;
+        }
+
+        .message {
+            background: #fff3cd;
+            color: #664d03;
+            padding: 12px;
+            border-radius: 7px;
+            margin-top: 10px;
+        }
+
+        .actions {
+            margin-top: 25px;
+        }
+
+        .button {
+            display: inline-block;
+            margin: 5px 7px 5px 0;
+            padding: 11px 17px;
+            border-radius: 7px;
+            text-decoration: none;
+            color: white;
+            background: #176b55;
+        }
+
+        .logout {
+            background: #b42318;
+        }
+
+        .notice {
+            background: white;
+            padding: 18px;
+            border-radius: 12px;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+            color: #68777c;
+            margin-top: 35px;
+            font-size: 13px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px 10px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    {% set role = session.get('role', 'User') %}
+
+    <!-- HEADER -->
+    <div class="header">
+        <h1>
+            {% if role == 'Admin' %}
+                Admin Dashboard
+            {% elif role == 'Pharmacist' %}
+                Pharmacist Dashboard
+            {% else %}
+                Welcome to MedFind
+            {% endif %}
+        </h1>
+
+        <p>
+            Welcome,
+            <strong>{{ session.get('username', 'User') }}</strong>!
+        </p>
+
+        <p>
+            Your role:
+            <span class="role">{{ role }}</span>
+        </p>
+
+        {% if role == 'Pharmacist' %}
+            <p>
+                Pharmacy:
+                <strong>
+                    {{ session.get('pharmacy_name') or 'Not assigned' }}
+                </strong>
+            </p>
+        {% elif role == 'User' %}
+            <p>
+                Search medicines and compare prices across pharmacies.
+            </p>
+        {% elif role == 'Admin' %}
+            <p>
+                Manage medicines, pharmacies, users and reports.
+            </p>
+        {% endif %}
+
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                <div class="message">{{ message }}</div>
+            {% endfor %}
+        {% endwith %}
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    {% if role == 'Admin' %}
+
+        <h2>Complete Inventory Overview</h2>
+
+        {% if stats %}
+        <div class="cards">
+            <div class="card">
+                <p>Total Medicine Records</p>
+                <h2>{{ stats.total_medicines }}</h2>
+            </div>
+
+            <div class="card">
+                <p>Available Records</p>
+                <h2>{{ stats.available_medicines }}</h2>
+            </div>
+
+            <div class="card">
+                <p>Out of Stock</p>
+                <h2>{{ stats.out_of_stock }}</h2>
+            </div>
+
+            <div class="card">
+                <p>Total Units in Stock</p>
+                <h2>{{ stats.total_stock }}</h2>
+            </div>
+        </div>
+        {% endif %}
+
+        <h2>Inventory Management</h2>
+
+        <div class="links">
+
+            <div class="link-card">
+                <h3>Add Medicine</h3>
+                <p>Add new medicine records.</p>
+                <a href="{{ url_for('add_medicine') }}">
+                    Open Medicine Form
+                </a>
+            </div>
+
+            <div class="link-card">
+                <h3>Update Stock</h3>
+                <p>Update medicine quantities.</p>
+                <a href="{{ url_for('update_stock') }}">
+                    Update Stock
+                </a>
+            </div>
+
+            <div class="link-card">
+                <h3>All Medicines</h3>
+                <p>Review medicine inventory.</p>
+                <a href="{{ url_for('view_medicines') }}">
+                    View Inventory
+                </a>
+            </div>
+
+            <div class="link-card">
+                <h3>Low Stock</h3>
+                <p>Check medicines with stock of 5 or less.</p>
+                <a href="{{ url_for('low_stock') }}">
+                    Low Stock Report
+                </a>
+            </div>
+
+            <div class="link-card">
+                <h3>Expiry Alerts</h3>
+                <p>Review medicines nearing expiry.</p>
+                <a href="{{ url_for('expiry_alert') }}">
+                    Expiry Report
+                </a>
+            </div>
+
+            <div class="link-card">
+                <h3>Edit Medicines</h3>
+                <p>Edit medicine and inventory details.</p>
+                <a href="{{ url_for('edit_medicine') }}">
+                    Edit Medicines
+                </a>
+            </div>
+
+            <div class="link-card">
+                <h3>Delete Medicine</h3>
+                <p>Remove medicine records.</p>
+                <a href="{{ url_for('delete_medicine') }}">
+                    Delete Records
+                </a>
+            </div>
+
+            <div class="link-card">
+                <h3>Manage Users</h3>
+                <p>Manage user roles and pharmacy assignments.</p>
+                <a href="{{ url_for('manage_users') }}">
+                    Manage Users
+                </a>
+            </div>
+
+            <div class="link-card">
+                <h3>Pharmacy Report</h3>
+                <p>Review inventory reports by pharmacy.</p>
+                <a href="{{ url_for('pharmacy_report') }}">
+                    View Reports
+                </a>
+            </div>
+
+        </div>
+
+    <!-- PHARMACIST DASHBOARD -->
+    {% elif role == 'Pharmacist' %}
+
+        <h2>Your Pharmacy Overview</h2>
+
+        {% if stats %}
+        <div class="cards">
+            <div class="card">
+                <p>Medicine Records</p>
+                <h2>{{ stats.total_medicines }}</h2>
+            </div>
+
+            <div class="card">
+                <p>Available Records</p>
+                <h2>{{ stats.available_medicines }}</h2>
+            </div>
+
+            <div class="card">
+                <p>Out of Stock</p>
+                <h2>{{ stats.out_of_stock }}</h2>
+            </div>
+
+            <div class="card">
+                <p>Total Units in Stock</p>
+                <h2>{{ stats.total_stock }}</h2>
+            </div>
+        </div>
+        {% endif %}
+
+        <h2>Pharmacy Management</h2>
+
+        <div class="links">
+
+            <div class="link-card">
+                <h3>Add Medicine</h3>
+                <p>Add medicine records for your pharmacy.</p>
+                <a href="{{ url_for('add_medicine') }}">
+                    Open Medicine Form
+                </a>
+            </div>
+
+            <div class="link-card">
+                <h3>Update Stock</h3>
+                <p>Change stock quantities for your pharmacy.</p>
+                <a href="{{ url_for('update_stock') }}">
+                    Update Stock
+                </a>
+            </div>
+
+            <div class="link-card">
+                <h3>Your Medicines</h3>
+                <p>Review your pharmacy's medicine records.</p>
+                <a href="{{ url_for('view_medicines') }}">
+                    View Medicines
+                </a>
+            </div>
+
+            <div class="link-card">
+                <h3>Low Stock</h3>
+                <p>Identify medicines that need restocking.</p>
+                <a href="{{ url_for('low_stock') }}">
+                    Check Low Stock
+                </a>
+            </div>
+
+            <div class="link-card">
+                <h3>Expiry Alerts</h3>
+                <p>Check medicines nearing expiry.</p>
+                <a href="{{ url_for('expiry_alert') }}">
+                    Check Expiry
+                </a>
+            </div>
+
+        </div>
+
+    <!-- NORMAL USER DASHBOARD -->
+    {% else %}
+
+        <div class="notice">
+            <h2 style="margin-top: 0;">Find Your Medicine</h2>
+            Search for a medicine, check its availability and compare prices
+            from different pharmacies.
+        </div>
+
+        <h2>Medicine Services</h2>
+
+        <div class="links">
+
+            <div class="link-card">
+                <h3>Search Medicines</h3>
+                <p>Find a medicine and check its availability.</p>
+                <a href="{{ url_for('search') }}">
+                    Search Now
+                </a>
+            </div>
+
+            <div class="link-card">
+                <h3>Compare Prices</h3>
+                <p>Compare prices to find a suitable option.</p>
+                <a href="{{ url_for('compare_prices') }}">
+                    Compare Prices
+                </a>
+            </div>
+
+            <div class="link-card">
+                <h3>Browse Medicines</h3>
+                <p>Browse listed medicines and their availability.</p>
+                <a href="{{ url_for('view_medicines') }}">
+                    Browse Medicines
+                </a>
+            </div>
+
+        </div>
+
+    {% endif %}
+
+    <!-- COMMON ACTIONS -->
+    <div class="actions">
+        <a class="button" href="{{ url_for('home') }}">
+            Home
+        </a>
+
+        <a class="button logout" href="{{ url_for('logout') }}">
+            Logout
+        </a>
+    </div>
+
+    <footer>
+        MedFind — Medicine Availability Finder
+    </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Compare Medicine Prices - MedFind</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f6f9;
+            margin: 0;
+            padding: 25px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            color: #176b57;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+
+        button {
+            padding: 12px 18px;
+            background: #176b57;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background: #105342;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            min-width: 650px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #176b57;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f7f9fa;
+        }
+
+        .available {
+            color: green;
+            font-weight: bold;
+        }
+
+        .unavailable {
+            color: red;
+            font-weight: bold;
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 12px;
+            background: #f3f6f9;
+            border-radius: 5px;
+        }
+
+        .back {
+            display: inline-block;
+            margin-top: 25px;
+            color: #176b57;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>Compare Medicine Prices</h1>
+    <p>Find and compare medicine prices at different pharmacies.</p>
+
+    <form class="search-form"
+          method="POST"
+          action="{{ url_for('compare_prices') }}">
+
+        <input
+            type="text"
+            name="medicine_name"
+            placeholder="Enter medicine name"
+            value="{{ query or '' }}"
+            required
+        >
+
+        <button type="submit">Compare Prices</button>
+    </form>
+
+    {% if query %}
+        <h3>Results for: {{ query }}</h3>
+
+        {% if medicines %}
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Medicine</th>
+                        <th>Pharmacy</th>
+                        <th>Address</th>
+                        <th>Price (₹)</th>
+                        <th>Stock</th>
+                        <th>Phone</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for medicine in medicines %}
+                    <tr>
+                        <td>{{ medicine['medicine_name'] }}</td>
+                        <td>{{ medicine['pharmacy_name'] }}</td>
+                        <td>{{ medicine['address'] or 'N/A' }}</td>
+                        <td>₹{{ medicine['price'] }}</td>
+
+                        <td>
+                            {% if medicine['stock'] is not none
+                                  and medicine['stock'] > 0 %}
+                                <span class="available">
+                                    Available ({{ medicine['stock'] }})
+                                </span>
+                            {% else %}
+                                <span class="unavailable">
+                                    Out of Stock
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ medicine['phone'] or 'N/A' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% else %}
+            <p class="message">
+                No matching medicine found. Please try another medicine name.
+            </p>
+        {% endif %}
+    {% endif %}
+
+    <a class="back" href="{{ url_for('dashboard') }}">
+        ← Back to Dashboard
+    </a>
+
+</div>
+</body>
+</html>

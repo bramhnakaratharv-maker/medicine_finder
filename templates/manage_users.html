@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users - MedFind</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f6fa;
+            margin: 0;
+            padding: 25px;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #0001;
+            overflow-x: auto;
+        }
+
+        h1 {
+            color: #176b58;
+        }
+
+        a {
+            color: #176b58;
+        }
+
+        .message {
+            background: #e6f5ed;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .error-message {
+            background: #fde8e8;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #176b58;
+            color: white;
+        }
+
+        input, select, button {
+            padding: 8px;
+            margin: 3px 0;
+        }
+
+        button {
+            background: #176b58;
+            color: white;
+            border: 0;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #105342;
+        }
+
+        .form-row {
+            min-width: 130px;
+            width: 140px;
+            box-sizing: border-box;
+        }
+
+        .back {
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+
+        .empty {
+            padding: 15px;
+            background: #fff4df;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <a class="back" href="{{ url_for('dashboard') }}">
+        &larr; Back to Dashboard
+    </a>
+
+    <h1>Manage Users</h1>
+
+    <p>
+        Admin can change user roles and assign a pharmacy to pharmacists.
+    </p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="{% if category == 'error' %}error-message{% else %}message{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+    {% if users %}
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Pharmacy</th>
+                <th>Registered</th>
+                <th>Update</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for user in users %}
+
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.email }}</td>
+
+                <td>
+                    <form method="POST"
+                          action="{{ url_for('manage_users') }}">
+
+                        <input type="hidden"
+                               name="user_id"
+                               value="{{ user.id }}">
+
+                        <select name="role" required>
+
+                            <option value="Customer"
+                                {% if user.role|string|lower == 'customer' %}selected{% endif %}>
+                                Customer
+                            </option>
+
+                            <option value="User"
+                                {% if user.role|string|lower == 'user' %}selected{% endif %}>
+                                User
+                            </option>
+
+                            <option value="Pharmacist"
+                                {% if user.role|string|lower == 'pharmacist' %}selected{% endif %}>
+                                Pharmacist
+                            </option>
+
+                            <option value="Admin"
+                                {% if user.role|string|lower in ['admin', 'administrator'] %}selected{% endif %}>
+                                Admin
+                            </option>
+
+                        </select>
+                </td>
+
+                <td>
+                    <input
+                        class="form-row"
+                        type="text"
+                        name="pharmacy_name"
+                        value="{{ user.pharmacy_name or '' }}"
+                        placeholder="Pharmacy name">
+                </td>
+
+                <td>
+                    {{ user.created_at or '-' }}
+                </td>
+
+                <td>
+                        <button type="submit">Save</button>
+                    </form>
+                </td>
+            </tr>
+
+        {% else %}
+            <tr>
+                <td colspan="7">
+                    No users found in the database.
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {% else %}
+        <p class="empty">
+            No users found in the database.
+        </p>
+    {% endif %}
+
+</div>
+</body>
+</html>

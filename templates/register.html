@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - MedFind</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e8f5f1, #eef4ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .register-box {
+            background: white;
+            width: 100%;
+            max-width: 390px;
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px #1232;
+        }
+
+        h2 {
+            text-align: center;
+            color: #13795b;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #667085;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            color: #344054;
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            margin-top: 7px;
+            border: 1px solid #d0d5dd;
+            border-radius: 7px;
+            background: white;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #168568;
+            box-shadow: 0 0 0 3px #16856820;
+        }
+
+        button {
+            width: 100%;
+            padding: 13px;
+            margin-top: 24px;
+            background: #168568;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #116b53;
+        }
+
+        a {
+            color: #13795b;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .message {
+            color: #c0392b;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 14px;
+        }
+
+        .role-note {
+            font-size: 12px;
+            color: #667085;
+            margin-top: 6px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="register-box">
+        <h2>Create MedFind Account</h2>
+        <p class="subtitle">Register to access medicine services</p>
+
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                <p class="message">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST" action="{{ url_for('register') }}">
+            <label for="username">Username</label>
+            <input
+                type="text"
+                id="username"
+                name="username"
+                maxlength="50"
+                autocomplete="username"
+                required
+            >
+
+            <label for="email">Email</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                maxlength="150"
+                autocomplete="email"
+                required
+            >
+
+            <label for="password">Password (minimum 8 characters)</label>
+            <input
+                type="password"
+                id="password"
+                name="password"
+                minlength="8"
+                autocomplete="new-password"
+                required
+            >
+
+            <label for="confirm_password">Confirm Password</label>
+            <input
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                minlength="8"
+                autocomplete="new-password"
+                required
+            >
+
+            <label for="role">Register As</label>
+            <select id="role" name="role" required>
+                <option value="User" selected>Normal User</option>
+                <option value="Pharmacist">Pharmacist</option>
+            </select>
+
+            <p class="role-note">
+                Admin accounts are created securely by an administrator.
+            </p>
+
+            <button type="submit">Create Account</button>
+        </form>
+
+        <div class="links">
+            <p>Already have an account?
+                <a href="{{ url_for('login') }}">Login</a>
+            </p>
+
+            <p>
+                <a href="{{ url_for('home') }}">Back to Home</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

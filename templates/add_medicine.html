@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Medicine | MedFind</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f6fc;
+            margin: 0;
+            padding: 30px 15px;
+            color: #263238;
+        }
+
+        .container {
+            max-width: 650px;
+            margin: auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px #00000012;
+        }
+
+        h1 {
+            color: #176b55;
+            text-align: center;
+            margin-top: 0;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #68777c;
+            margin-bottom: 25px;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 12px;
+            border-radius: 7px;
+            margin-bottom: 10px;
+            overflow-wrap: anywhere;
+            background: #fff3cd;
+            color: #664d03;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 7px;
+        }
+
+        .required {
+            color: #b42318;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccd6d9;
+            border-radius: 7px;
+            font-size: 15px;
+            background: #ffffff;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #219b76;
+            box-shadow: 0 0 0 3px #219b7620;
+        }
+
+        .save-button {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 7px;
+            background: #176b55;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .save-button:hover {
+            background: #125440;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #176b55;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .note {
+            font-size: 13px;
+            color: #68777c;
+            line-height: 1.5;
+            margin-top: 16px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Add New Medicine</h1>
+
+    <p class="subtitle">
+        MedFind — Medicine Availability Finder
+    </p>
+
+    <!-- Flash messages -->
+    <div class="messages">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% for category, message in messages %}
+                <div class="message" role="status">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+    </div>
+
+    <!-- Medicine form -->
+    <form method="POST"
+          action="{{ url_for('add_medicine') }}">
+
+        <div class="form-group">
+            <label for="medicine_name">
+                Medicine Name <span class="required">*</span>
+            </label>
+
+            <input
+                type="text"
+                id="medicine_name"
+                name="medicine_name"
+                placeholder="Enter medicine name"
+                maxlength="150"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="pharmacy_name">
+                Pharmacy Name <span class="required">*</span>
+            </label>
+
+            <input
+                type="text"
+                id="pharmacy_name"
+                name="pharmacy_name"
+                placeholder="Enter pharmacy name"
+                maxlength="150"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="address">
+                Pharmacy Address <span class="required">*</span>
+            </label>
+
+            <input
+                type="text"
+                id="address"
+                name="address"
+                placeholder="Enter complete address"
+                maxlength="300"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="price">
+                Price (₹) <span class="required">*</span>
+            </label>
+
+            <input
+                type="number"
+                id="price"
+                name="price"
+                placeholder="Enter medicine price"
+                min="0"
+                step="0.01"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="stock">
+                Stock Quantity <span class="required">*</span>
+            </label>
+
+            <input
+                type="number"
+                id="stock"
+                name="stock"
+                placeholder="Enter available quantity"
+                min="0"
+                step="1"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Pharmacy Phone Number</label>
+
+            <input
+                type="tel"
+                id="phone"
+                name="phone"
+                placeholder="Enter contact number"
+                maxlength="20"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="expiry_date">Expiry Date</label>
+
+            <input
+                type="date"
+                id="expiry_date"
+                name="expiry_date"
+            >
+        </div>
+
+        <button type="submit" class="save-button">
+            Save Medicine
+        </button>
+
+    </form>
+
+    <p class="note">
+        Fields marked with * are required.
+        Please verify the medicine details before saving.
+    </p>
+
+    <a class="back-link"
+       href="{{ url_for('dashboard') }}">
+        ← Back to Dashboard
+    </a>
+
+</div>
+
+</body>
+</html>

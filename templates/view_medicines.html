@@ -1,0 +1,206 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Medicines | Medicine Finder</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 25px;
+            font-family: Arial, sans-serif;
+            background: #f3f6fb;
+            color: #263238;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            margin: 0;
+            color: #173b67;
+        }
+
+        .subtitle {
+            color: #64748b;
+            margin-top: 8px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 11px 17px;
+            border-radius: 7px;
+            text-decoration: none;
+            color: white;
+            background: #1769aa;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #104e80;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.07);
+            overflow-x: auto;
+        }
+
+        .count {
+            margin-bottom: 18px;
+            color: #475569;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 13px 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #173b67;
+            color: white;
+            white-space: nowrap;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        .stock {
+            color: #15803d;
+            font-weight: bold;
+        }
+
+        .out-stock {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .empty {
+            padding: 35px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+
+            .header {
+                align-items: flex-start;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="header">
+            <div>
+                <h1>Browse Medicines</h1>
+                <p class="subtitle">
+                    View medicines available in registered pharmacies.
+                </p>
+            </div>
+
+            <a class="btn" href="{{ url_for('dashboard') }}">
+                Back to Dashboard
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="count">
+                Total Records: {{ medicines|length }}
+            </div>
+
+            {% if medicines %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Medicine Name</th>
+                        <th>Pharmacy Name</th>
+                        <th>Address</th>
+                        <th>Price (₹)</th>
+                        <th>Stock</th>
+                        <th>Phone</th>
+                        <th>Expiry Date</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for medicine in medicines %}
+                    <tr>
+                        <td>{{ medicine.id }}</td>
+                        <td>{{ medicine.medicine_name }}</td>
+                        <td>{{ medicine.pharmacy_name }}</td>
+                        <td>{{ medicine.address or '-' }}</td>
+                        <td>
+                            {% if medicine.price is not none %}
+                                ₹{{ "%.2f"|format(medicine.price|float) }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if medicine.stock|int > 0 %}
+                                <span class="stock">
+                                    {{ medicine.stock }}
+                                </span>
+                            {% else %}
+                                <span class="out-stock">
+                                    Out of Stock
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td>{{ medicine.phone or '-' }}</td>
+                        <td>{{ medicine.expiry_date or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% else %}
+            <div class="empty">
+                <h3>No Medicines Found</h3>
+                <p>Abhi database mein koi medicine record nahi hai.</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</body>
+</html>

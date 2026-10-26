@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Medicine - MedFind</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f5f9;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+        }
+        h1 { color: #24476b; }
+        input {
+            box-sizing: border-box;
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background: #1769aa;
+            color: white;
+            padding: 11px 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 9px;
+            text-align: left;
+        }
+        th { background: #1769aa; color: white; }
+        .back { display: inline-block; margin-bottom: 15px; }
+        .message { color: #176b3a; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Edit Medicine Details</h1>
+    <a class="back" href="{{ url_for('home') }}">Back to Home</a>
+
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <p class="message">{{ message }}</p>
+        {% endfor %}
+    {% endwith %}
+
+    <h2>Update a Medicine</h2>
+    <p>Enter the medicine ID shown in the table below, then update its details.</p>
+
+    <form method="POST" action="{{ url_for('edit_medicine') }}">
+        <label>Medicine ID</label>
+        <input type="number" name="medicine_id" min="1" required>
+
+        <label>Medicine Name</label>
+        <input type="text" name="medicine_name" required>
+
+        <label>Pharmacy Name</label>
+        <input type="text" name="pharmacy_name" required>
+
+        <label>Address</label>
+        <input type="text" name="address" required>
+
+        <label>Price (₹)</label>
+        <input type="number" name="price" min="0" step="0.01" required>
+
+        <label>Stock Quantity</label>
+        <input type="number" name="stock" min="0" required>
+
+        <label>Expiry Date</label>
+        <input type="date" name="expiry_date" required>
+
+        <label>Phone</label>
+        <input type="text" name="phone">
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <h2>Existing Medicines</h2>
+
+    {% if medicines %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Medicine</th>
+                <th>Pharmacy</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Expiry Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for medicine in medicines %}
+            <tr>
+                <td>{{ medicine[0] }}</td>
+                <td>{{ medicine[1] }}</td>
+                <td>{{ medicine[2] }}</td>
+                <td>₹{{ medicine[4] }}</td>
+                <td>{{ medicine[5] }}</td>
+                <td>{{ medicine[6] or "Not set" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p>No medicines found.</p>
+    {% endif %}
+</div>
+</body>
+</html>
